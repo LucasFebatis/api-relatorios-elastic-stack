@@ -42,18 +42,23 @@ public class HelloWorldController {
         return new Greeting(counter.incrementAndGet(), String.format(templateType, "General"));
     }
 
-    @PostMapping("/make-personal-report/{paymentType}")
+    @PostMapping("/make-personal-report/{paymentType}/{throwError}")
     @ResponseBody
-    public Greeting makePersonalReport(@PathVariable(required = false) PaymentType paymentType) {
+    public Greeting makePersonalReport(@PathVariable(required = false) PaymentType paymentType, @PathVariable boolean throwError) {
 
-        String type = "COMPLETE";
-
-        if (!Objects.isNull(paymentType)) {
-            type = paymentType.name();
+        if(throwError) {
+            throw new RuntimeException("Ocorreu erro chato");
         }
 
-        logger.info("Report Type: {}", value("ReportType", "PERSONAL " + type));
-        return new Greeting(counter.incrementAndGet(), String.format(templateType, "PERSONAL " + type));
+        logger.info("Report Type: {}", value("ReportType", "PERSONAL " + paymentType));
+        return new Greeting(counter.incrementAndGet(), String.format(templateType, "PERSONAL " + paymentType));
+    }
+
+    @PostMapping("/make-personal-report/complete")
+    @ResponseBody
+    public Greeting makePersonalReport() {
+        logger.info("Report Type: {}", value("ReportType", "PERSONAL COMPLETE"));
+        return new Greeting(counter.incrementAndGet(), String.format(templateType, "PERSONAL COMPLETE"));
     }
 
 }
