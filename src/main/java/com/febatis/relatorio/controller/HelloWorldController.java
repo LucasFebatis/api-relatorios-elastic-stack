@@ -2,12 +2,13 @@ package com.febatis.relatorio.controller;
 
 import com.febatis.relatorio.enums.PaymentType;
 import com.febatis.relatorio.model.Greeting;
+import com.febatis.relatorio.model.Payment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -59,6 +60,18 @@ public class HelloWorldController {
     public Greeting makePersonalReport() {
         logger.info("Report Type: {}", value("ReportType", "PERSONAL COMPLETE"));
         return new Greeting(counter.incrementAndGet(), String.format(templateType, "PERSONAL COMPLETE"));
+    }
+
+    @PostMapping("/statement")
+    @ResponseBody
+    public Payment[] getStatement() {
+        logger.info("Report Type: {}", value("ReportType", "STATEMENT"));
+
+        final String uri = "http://localhost:8080/pagamentos/pay/find-all";
+
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.getForObject(uri, Payment[].class);
+
     }
 
 }
